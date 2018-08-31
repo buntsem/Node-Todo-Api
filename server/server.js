@@ -25,10 +25,6 @@ app.post('/todos', (req, res) => {
     .catch ((error) => {
       res.status(400).send(error);
     });
-
-    // , (error) => {
-    //   res.status(400).send(error);
-    // });
 });
 app.get('/todos', (req, res) => {
   Todo.find().then((todos) => {
@@ -102,6 +98,24 @@ app.patch('/todos/:id',(req, res) => {
     res.status(400).send();
   })
 })
+
+//POST /users
+app.post('/users', (req, res) => {
+
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User(body);
+
+
+    user.save().then(() => {
+      return user.generateAuthToken();
+    }).then((token) => {
+      res.header('x-auth', token).send(user);
+    }).catch((e) => {
+      console.log('error at 114 ', e);
+      res.status(409).send(e);
+    })
+});
+
 app.listen(port, () => {
   console.log(`Stared on port ${port}`);
 });
